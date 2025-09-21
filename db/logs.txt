@@ -1,1 +1,4 @@
 Query streaming started successfully for query: who are you
+Query successful for query: What is RAG?
+Query streaming started successfully for query: stream please
+Upload failed - only PDF files are supported

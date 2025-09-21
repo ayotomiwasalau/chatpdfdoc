@@ -4,7 +4,7 @@ import os
 
 if __name__ == "__main__":
     # Run the server with auto-reload for development
-    port = int(os.getenv("PORT", "4000"))
+    port = int(os.environ.get("PORT", "10000"))
     uvicorn.run(
         "app.controllers:app",
         host="0.0.0.0",
