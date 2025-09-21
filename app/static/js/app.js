@@ -4,7 +4,7 @@ function el(tag, cls){ const e=document.createElement(tag); if(cls) e.className=
 // App config (endpoints)
 if(!window.APP_CONFIG){
   window.APP_CONFIG = {
-    endpoints: { query: "/query", upload: "/upload" }
+    endpoints: { query: "/api/v1/query", upload: "/api/v1/upload" }
   };
 }
 

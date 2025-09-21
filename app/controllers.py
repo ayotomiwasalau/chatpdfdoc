@@ -49,13 +49,13 @@ async def home(request: Request):
 async def add_document(request: Request):
     return templates.TemplateResponse("add_document.html", {"request": request})
 
-@app.post(f"api/{API_VERSION}/query")
+@app.post(f"/api/{API_VERSION}/query")
 async def query_llm(request: QueryRequest, stream_mode: bool = False):
     query = Query(chat_openai_agent, chroma_db, config)
     query_service = QueryService(query, log_data)
     return query_service.query_svc(request.query, stream_mode)
 
-@app.post(f"api/{API_VERSION}/upload")
+@app.post(f"/api/{API_VERSION}/upload")
 async def upload_document(file: UploadFile = File(...)):
     ingestor = Ingest()
     processor = Process(config)
