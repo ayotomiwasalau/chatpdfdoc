@@ -1,12 +1,14 @@
 import uvicorn
 from app.controllers import app
+import os
 
 if __name__ == "__main__":
     # Run the server with auto-reload for development
+    port = int(os.getenv("PORT", "4000"))
     uvicorn.run(
         "app.controllers:app",
         host="0.0.0.0",
-        port=8000,
-        reload=True,
+        port=port,
+        reload=False,
         log_level="info"
     )
