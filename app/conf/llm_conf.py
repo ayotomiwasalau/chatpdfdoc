@@ -1,5 +1,7 @@
 from langchain_openai import ChatOpenAI
 from app.conf.config import Config
+
+
 class LLMConf:
     def __init__(self, config: Config) -> None:
         self.llm_config = ChatOpenAI(

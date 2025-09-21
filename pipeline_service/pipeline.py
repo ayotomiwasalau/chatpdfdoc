@@ -4,6 +4,8 @@ from .ingest import Ingest
 from .process import Process
 from .store import Store
 from db.log_db import LogData
+
+
 class Pipeline:
     def __init__(self, ingestor: Ingest, processor: Process, store: Store, log_data: LogData) -> None:
         self.run_id = str(uuid.uuid4())
@@ -11,7 +13,6 @@ class Pipeline:
         self.processor = processor
         self.store = store
         self.log_data = log_data
-
 
     def run(self, filepath: str) -> str:
         try:
@@ -21,8 +22,11 @@ class Pipeline:
             self.store.store_embeddings_chroma(processed)
             return self.run_id
         except (FileNotFoundError, ValueError) as e:
-            self.log_data.add_log(f"Pipeline failed (run_id={self.run_id})"+str(e))
-            raise  
+            self.log_data.add_log(
+                f"Pipeline failed (run_id={self.run_id})"+str(e))
+            raise
         except Exception as e:
-            self.log_data.add_log(f"Pipeline failed (run_id={self.run_id})"+str(e))
-            raise RuntimeError(f"Pipeline failed (run_id={self.run_id})"+str(e))
+            self.log_data.add_log(
+                f"Pipeline failed (run_id={self.run_id})"+str(e))
+            raise RuntimeError(
+                f"Pipeline failed (run_id={self.run_id})"+str(e))

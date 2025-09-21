@@ -63,5 +63,3 @@ def test_query_service_runtime_error_mapped():
         svc.query_svc("hi", stream_mode=False)
     assert ei.value.status_code == 502
     assert any("Upstream LLM error" in x for x in logger.get_log())
-
-

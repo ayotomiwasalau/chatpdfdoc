@@ -4,7 +4,7 @@ class Config:
     search_count = 3
     collection = "geo_rag"
     embedding_model = "text-embedding-3-large"
-    log_file="./db/logs.txt"
+    log_file = "./db/logs.txt"
     persist_directory = "./db/chroma"
     model = "gpt-4o-mini"
     temperature = 0.7

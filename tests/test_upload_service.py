@@ -62,13 +62,15 @@ async def test_upload_service_valid_pdf(monkeypatch):
 
     # Patch aiofiles.open to no-op async writer
     import aiofiles
-    monkeypatch.setattr(aiofiles, "open", lambda *args, **kwargs: _AsyncOpen(), raising=True)
+    monkeypatch.setattr(aiofiles, "open", lambda *args, **
+                        kwargs: _AsyncOpen(), raising=True)
 
     # Avoid os.remove call by reporting file does not exist
     import os
     monkeypatch.setattr(os.path, "exists", lambda p: False, raising=True)
 
-    upload = DummyUploadFile(filename="test.pdf", content=b"%PDF-1.4\nDATA", content_type="application/pdf")
+    upload = DummyUploadFile(
+        filename="test.pdf", content=b"%PDF-1.4\nDATA", content_type="application/pdf")
     run_id = await svc.upload_svc(upload)
     assert run_id == "run-123"
 
@@ -80,27 +82,30 @@ async def test_upload_service_validation_errors():
     with pytest.raises(Exception):
         await svc.upload_svc(None)  # type: ignore
 
-    upload = DummyUploadFile(filename=" ", content=b"", content_type="application/pdf")
+    upload = DummyUploadFile(filename=" ", content=b"",
+                             content_type="application/pdf")
     with pytest.raises(Exception):
         await svc.upload_svc(upload)
 
-    upload = DummyUploadFile(filename="doc.txt", content=b"x", content_type="text/plain")
+    upload = DummyUploadFile(
+        filename="doc.txt", content=b"x", content_type="text/plain")
     with pytest.raises(Exception):
         await svc.upload_svc(upload)
 
 
 @pytest.mark.asyncio
 async def test_upload_service_pipeline_failure(monkeypatch):
-    svc = UploadService(pipeline=DummyPipeline(should_fail=True), log_data=DummyLog())
+    svc = UploadService(pipeline=DummyPipeline(
+        should_fail=True), log_data=DummyLog())
 
     import aiofiles
-    monkeypatch.setattr(aiofiles, "open", lambda *args, **kwargs: _AsyncOpen(), raising=True)
+    monkeypatch.setattr(aiofiles, "open", lambda *args, **
+                        kwargs: _AsyncOpen(), raising=True)
 
     import os
     monkeypatch.setattr(os.path, "exists", lambda p: False, raising=True)
 
-    upload = DummyUploadFile(filename="bad.pdf", content=b"%PDF-1.4\nDATA", content_type="application/pdf")
+    upload = DummyUploadFile(
+        filename="bad.pdf", content=b"%PDF-1.4\nDATA", content_type="application/pdf")
     with pytest.raises(Exception) as ei:
         await svc.upload_svc(upload)
-
-

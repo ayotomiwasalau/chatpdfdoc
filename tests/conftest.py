@@ -12,5 +12,3 @@ def _test_env():
 def client():
     from app.controllers import app
     return TestClient(app)
-
-

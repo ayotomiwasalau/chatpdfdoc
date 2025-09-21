@@ -41,19 +41,24 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 # Root renders Home page
+
+
 @app.get("/")
 async def home(request: Request):
-    return templates.TemplateResponse(request,"home.html")
+    return templates.TemplateResponse(request, "home.html")
+
 
 @app.get(f"/add-document")
 async def add_document(request: Request):
     return templates.TemplateResponse(request, "add_document.html")
+
 
 @app.post(f"/api/{API_VERSION}/query")
 async def query_llm(request: QueryRequest, stream_mode: bool = False):
     query = Query(chat_openai_agent, chroma_db, config)
     query_service = QueryService(query, log_data)
     return query_service.query_svc(request.query, stream_mode)
+
 
 @app.post(f"/api/{API_VERSION}/upload")
 async def upload_document(file: UploadFile = File(...)):
@@ -65,6 +70,7 @@ async def upload_document(file: UploadFile = File(...)):
     run_id = await upload_service.upload_svc(file)
 
     return UploadResponse(run_id=run_id)
+
 
 @app.get(f"/health")
 def health_check():

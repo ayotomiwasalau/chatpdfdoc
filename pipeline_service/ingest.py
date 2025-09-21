@@ -3,6 +3,7 @@ from typing import List
 import os
 from langchain_core.documents import Document
 
+
 class Ingest:
     def __init__(self) -> None:
         self._filepath = None
@@ -22,5 +23,3 @@ class Ingest:
         if not pages:
             raise ValueError(f"No pages found in: {self._filepath}")
         return pages
-
-

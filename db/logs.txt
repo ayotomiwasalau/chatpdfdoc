@@ -1,1 +1,1 @@
-Upload failed - only PDF files are supported
+Query streaming started successfully for query: who are you

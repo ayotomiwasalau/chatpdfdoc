@@ -2,6 +2,7 @@ from .chatOAagent import ChatOpenAIAgent
 from db.chroma_db import ChromaDB
 from app.conf.config import Config
 
+
 class Query:
     def __init__(self, chat_openai_agent: ChatOpenAIAgent, chroma_db: ChromaDB, config: Config) -> None:
         self.llm = chat_openai_agent
@@ -9,7 +10,8 @@ class Query:
         self.config = config
 
     def _build_prompt(self, user_prompt: str) -> str:
-        similar_docs = self.chroma_db.similarity_search(user_prompt, k=self.config.search_count)
+        similar_docs = self.chroma_db.similarity_search(
+            user_prompt, k=self.config.search_count)
         context = "\n\n".join([doc.page_content for doc in similar_docs])
         return f"{user_prompt}\n\nContext:\n{context}"
 

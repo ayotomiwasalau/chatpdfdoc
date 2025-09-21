@@ -19,7 +19,7 @@
 - add exception handling - done?
 - add logging, more descriptive - done?
 - Validating inputs - done?
-
+- handle cred - done?
 
 
 
@@ -28,8 +28,8 @@
 - delete doc from v-db
 
 
-- handle cred
-- add unit tests
+
+- add unit tests? done
 
 
 
@@ -43,7 +43,10 @@ prod: upload file to object storage ex. s3
 python3 -m venv .ragenv
 chmod +x .ragenv/bin/activate
 source .ragenv/bin/activate
+
 python -m pip install --upgrade pip setuptools wheel
 python -m pip install -r requirement.txt
 
 python -m uvicorn main:app --reload
+
+python -m pytest

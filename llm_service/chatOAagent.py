@@ -2,6 +2,7 @@ from typing import List
 from app.conf.llm_conf import LLMConf
 # from langchain_core.prompts import PromptTemplate
 
+
 class ChatOpenAIAgent:
     def __init__(self, llm_conf: LLMConf) -> None:
         self.client = llm_conf.llm_config

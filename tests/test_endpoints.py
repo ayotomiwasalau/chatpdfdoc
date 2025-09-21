@@ -43,9 +43,11 @@ def test_query_endpoint_streaming(monkeypatch, client):
         for t in tokens:
             yield t
 
-    monkeypatch.setattr(query_module.Query, "query_stream", fake_query_stream, raising=True)
+    monkeypatch.setattr(query_module.Query, "query_stream",
+                        fake_query_stream, raising=True)
 
-    resp = client.post("/api/v1/query?stream_mode=true", json={"query": "stream please"})
+    resp = client.post("/api/v1/query?stream_mode=true",
+                       json={"query": "stream please"})
     # StreamingResponse is consumed by TestClient into text
     assert resp.status_code == 200
     assert resp.text == "tok1 tok2 tok3"
@@ -59,7 +61,8 @@ def test_upload_endpoint_success(monkeypatch, client):
     async def fake_upload_svc(self, file):
         return "test-run-id"
 
-    monkeypatch.setattr(upload_service_module.UploadService, "upload_svc", fake_upload_svc, raising=True)
+    monkeypatch.setattr(upload_service_module.UploadService,
+                        "upload_svc", fake_upload_svc, raising=True)
 
     files = {"file": ("doc.pdf", b"%PDF-1.4\n...", "application/pdf")}
     resp = client.post("/api/v1/upload", files=files)
@@ -71,5 +74,3 @@ def test_upload_endpoint_validation_error(client):
     files = {"file": ("doc.txt", b"hello", "text/plain")}
     resp = client.post("/api/v1/upload", files=files)
     assert resp.status_code == 422
-
-
