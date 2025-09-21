@@ -1,1 +1,1 @@
-Query streaming started successfully for query: hwy
+Upload failed - only PDF files are supported

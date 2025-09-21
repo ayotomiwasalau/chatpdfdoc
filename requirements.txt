@@ -16,3 +16,5 @@ aiofiles
 pytest
 pytest-asyncio
 httpx
+flake8
+autopep8

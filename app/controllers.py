@@ -43,11 +43,11 @@ templates = Jinja2Templates(directory="app/templates")
 # Root renders Home page
 @app.get("/")
 async def home(request: Request):
-    return templates.TemplateResponse("home.html", {"request": request})
+    return templates.TemplateResponse(request,"home.html")
 
 @app.get(f"/add-document")
 async def add_document(request: Request):
-    return templates.TemplateResponse("add_document.html", {"request": request})
+    return templates.TemplateResponse(request, "add_document.html")
 
 @app.post(f"/api/{API_VERSION}/query")
 async def query_llm(request: QueryRequest, stream_mode: bool = False):
