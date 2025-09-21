@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Add Document - RAG System{% endblock %}
+{% block content %}
+<section class="uploader">
+    <div id="drop-zone" class="drop-zone">
+        <input id="file-input" type="file" multiple accept="image/*,application/pdf" hidden />
+        <p>Drag & drop files here or</p>
+        <button id="browse-btn" class="btn btn-secondary" type="button">Browse</button>
+    </div>
+    <div id="uploads-row" class="uploads-row"></div>
+    <div id="uploads-empty" class="uploads-empty">No uploads yet</div>
+</section>
+{% endblock %}
+{% block body_extra %}{% endblock %}
+

@@ -1,25 +1,30 @@
-from langchain_openai import ChatOpenAI
 from typing import List
+from app.conf.llm_conf import LLMConf
 # from langchain_core.prompts import PromptTemplate
 
 class ChatOpenAIAgent:
-    def __init__(self, model: str = "gpt-4o-mini", temperature: float = 0.7, max_tokens: int = None, timeout: int = None, max_retries: int = 2) -> None:
-        self.client = ChatOpenAI(
-            model=model,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            timeout=timeout,
-            max_retries=max_retries
-        )
+    def __init__(self, llm_conf: LLMConf) -> None:
+        self.client = llm_conf.llm_config
 
     def chat(self, system_prompt: str, user_prompt: str) -> str:
         messages = [
-            (
-                "system",
-                system_prompt,
-            ),
+            ("system", system_prompt),
             ("human", user_prompt),
         ]
-        print(messages)
-        ai_msg = self.client.invoke(messages)
-        return ai_msg.content
+        try:
+            ai_msg = self.client.invoke(messages)
+            return ai_msg.content
+        except Exception as e:
+            raise RuntimeError("LLM chat failed") from e
+
+    def chat_stream(self, system_prompt: str, user_prompt: str):
+        messages = [
+            ("system", system_prompt),
+            ("human", user_prompt),
+        ]
+        try:
+            for chunk in self.client.stream(messages):
+                if chunk and getattr(chunk, "content", None):
+                    yield chunk.content
+        except Exception as e:
+            raise RuntimeError("LLM chat failed") from e

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Home - RAG System{% endblock %}
+{% block content %}
+<section class="chat">
+    <div id="chat-window" class="chat-window"></div>
+    <form id="chat-form" class="chat-input">
+        <input type="text" id="chat-text" placeholder="Ask a question..." autocomplete="off" />
+        <button type="submit" class="btn btn-primary">Send</button>
+        <button id="new-chat-btn" class="btn btn-primary" type="button">New Chat</button>
+    </form>
+</section>
+{% endblock %}
+{% block body_extra %}{% endblock %}
+

@@ -2,17 +2,48 @@
 - finalize the pipeline service - done
 - set up the db properly - done
 - set up the llm classes and methods - done
-- set up fast api
-- set up front end
+- set up fast api - done
+- set up front end - done
+- make the chat stateful -done
+- add doc stateful - done
+- stream data to front end - done
+- organize file structure - done
+- ? provide query api w & w/o stremaing capability - done
+- delete temp files - done
+- handle config - done
+- work on the chunking size, search cnt - done
+- handling query with history of chat and responses - done
+- api versions - done
+- add swagger for documentation - done
+- work on system prompt - done?
+- add exception handling - done?
+- add logging, more descriptive - done?
+- Validating inputs - done?
 
-- add unit tests
+
+
+
 - schema mgt
-- organize file structure
-- add swagger for documentation
-- upload file to object storage ex. s3
-- work on the chunking size
+- review where the chat and uploaded doc info is stored
+- delete doc from v-db
 
-- add logging
-- add exception handling
-- handle cred/config
-- Validating inputs
+
+- handle cred
+- add unit tests
+
+
+
+
+
+- ? another database
+prod: upload file to object storage ex. s3
+
+
+
+python3 -m venv .ragenv
+chmod +x .ragenv/bin/activate
+source .ragenv/bin/activate
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -r requirement.txt
+
+python -m uvicorn main:app --reload
