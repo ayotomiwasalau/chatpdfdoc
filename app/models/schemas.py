@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from fastapi import UploadFile
+from typing import List
 
 
 class QueryRequest(BaseModel):
@@ -16,4 +17,11 @@ class UploadRequest(BaseModel):
 
 class UploadResponse(BaseModel):
     run_id: Optional[str] = None
+    message: str = "success"
+
+class DeleteRequest(BaseModel):
+    run_ids: List[str]
+
+class DeleteResponse(BaseModel):
+    run_ids: List[str]
     message: str = "success"

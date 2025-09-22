@@ -8,5 +8,5 @@ class ChromaDBConf:
         self.db_client = Chroma(
             collection_name=config.collection,
             embedding_function=OpenAIEmbeddings(model=config.embedding_model),
-            # persist_directory=config.persist_directory,
+            persist_directory=config.persist_directory,
         )

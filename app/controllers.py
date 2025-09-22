@@ -16,6 +16,10 @@ from pipeline_service.store import Store
 from pipeline_service.pipeline import Pipeline
 from app.services.upload_service import UploadService
 from llm_service.query import Query
+from typing import List
+from fastapi import Body
+from app.services.delete_service import DeleteService
+from app.models.schemas import DeleteResponse, DeleteRequest
 
 API_VERSION = "v1"
 
@@ -35,6 +39,11 @@ chroma_db = ChromaDB(chroma_db_conf)
 
 log_conf = LogConf(config)
 log_data = LogData(log_conf)
+
+ingestor = Ingest()
+processor = Process(config)
+store = Store(chroma_db)
+pipeline = Pipeline(ingestor, processor, store, log_data)
 
 # Static and templates
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -60,15 +69,18 @@ async def query_llm(request: QueryRequest, stream_mode: bool = False):
 
 @app.post(f"/api/{API_VERSION}/upload")
 async def upload_document(file: UploadFile = File(...)):
-    ingestor = Ingest()
-    processor = Process(config)
-    store = Store(chroma_db)
-    pipeline = Pipeline(ingestor, processor, store, log_data)
     upload_service = UploadService(pipeline, log_data)
     run_id = await upload_service.upload_svc(file)
 
     return UploadResponse(run_id=run_id)
 
+
+@app.delete(f"/api/{API_VERSION}/delete")
+async def delete_document(request: DeleteRequest = Body(...)):
+    run_ids = request.run_ids
+    delete_service = DeleteService(pipeline, log_data)
+    delete_service.delete_svc(run_ids)
+    return DeleteResponse(run_ids=run_ids)
 
 @app.get(f"/health")
 def health_check():

@@ -54,9 +54,13 @@ body {
 .btn { border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px 14px; cursor: pointer; }
 .btn-primary { background: var(--accent); border-color: #e5b22f; color: #111; font-weight: 600; }
 .btn-secondary { background: #1a1a1a; color: var(--text); }
+.btn-danger { background: #2a1313; border-color: #712b2b; color: #ff6b6b; }
+.btn-danger:hover { filter: none; background: #341818; }
 
 .drop-zone { border: 2px dashed var(--panel-border); border-radius: 12px; padding: 40px; display: grid; place-items: center; gap: 10px; background: var(--panel); }
 .drop-zone.dragover { border-color: var(--accent); background: rgba(255, 199, 60, 0.06); }
+
+.uploader-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 0 4px; }
 
 .uploads-row { display: flex; flex-direction: column; gap: 12px; padding-top: 16px; }
 .upload-card { border: 1px solid var(--panel-border); background: #161616; border-radius: 10px; padding: 12px; display: grid; gap: 8px; width: 100%; }

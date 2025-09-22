@@ -67,7 +67,37 @@ def test_upload_endpoint_success(monkeypatch, client):
     files = {"file": ("doc.pdf", b"%PDF-1.4\n...", "application/pdf")}
     resp = client.post("/api/v1/upload", files=files)
     assert resp.status_code == 200
-    assert resp.json() == {"run_id": "test-run-id", "status": "success"}
+    assert resp.json() == {"run_id": "test-run-id", "message": "success"}
+
+
+def test_delete_endpoint_success(monkeypatch, client):
+    # Patch pipeline.delete_documents to avoid touching vector store
+    from app import controllers as controllers_module
+
+    def fake_delete_documents(run_ids):
+        return None
+
+    monkeypatch.setattr(
+        controllers_module.pipeline,
+        "delete_documents",
+        fake_delete_documents,
+        raising=True,
+    )
+
+    payload = {"run_ids": ["run-1", "run-2"]}
+    resp = client.request("DELETE", "/api/v1/delete", json=payload)
+    assert resp.status_code == 200
+    assert resp.json() == {"run_ids": ["run-1", "run-2"], "message": "success"}
+
+
+def test_delete_endpoint_validation_error(client):
+    # Empty list should fail validation in service
+    resp = client.request("DELETE", "/api/v1/delete", json={"run_ids": []})
+    assert resp.status_code == 422
+
+    # List with empty/whitespace id should also fail
+    resp = client.request("DELETE", "/api/v1/delete", json={"run_ids": [" "]})
+    assert resp.status_code == 422
 
 
 def test_upload_endpoint_validation_error(client):

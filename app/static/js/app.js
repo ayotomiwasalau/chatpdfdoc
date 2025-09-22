@@ -4,7 +4,7 @@ function el(tag, cls){ const e=document.createElement(tag); if(cls) e.className=
 // App config (endpoints)
 if(!window.APP_CONFIG){
   window.APP_CONFIG = {
-    endpoints: { query: "/api/v1/query", upload: "/api/v1/upload" }
+    endpoints: { query: "/api/v1/query", upload: "/api/v1/upload", del: "/api/v1/delete" }
   };
 }
 
@@ -213,6 +213,27 @@ function saveUploads(list){
   try { localStorage.setItem(UPLOADS_KEY, JSON.stringify(list)); } catch {}
 }
 
+function getRunIds(){
+  const items = loadUploads();
+  if(!Array.isArray(items)) return [];
+  return items.map(x=> x && x.run_id).filter(Boolean);
+}
+
+async function deleteRunIds(runIds){
+  if(!Array.isArray(runIds) || !runIds.length) return { ok: true };
+  const url = new URL(window.APP_CONFIG.endpoints.del, window.location.origin);
+  const res = await fetch(url.toString(), {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ run_ids: runIds })
+  });
+  if(!res.ok){
+    const t = await res.text().catch(()=> '');
+    throw new Error(t || `Delete failed: ${res.status}`);
+  }
+  return res.json().catch(()=> ({}));
+}
+
 function renderUploadItem(listEl, item){
   const card = el('div', 'upload-card');
   const name = el('div', 'upload-name'); name.textContent = item.name;
@@ -256,6 +277,29 @@ function initUploader({dropZone, input, browseBtn, list}){
     if(files.length) handleFiles(files);
     input.value = '';
   });
+
+  const clearBtn = byId('clear-btn');
+  if(clearBtn){
+    clearBtn.addEventListener('click', async ()=>{
+      const ids = getRunIds();
+      // Clear local storage and UI immediately
+      try { localStorage.removeItem(UPLOADS_KEY); } catch {}
+      list.innerHTML = '';
+      const empty = byId('uploads-empty'); if(empty){ empty.style.display = 'block'; }
+      if(!ids.length){ return; }
+      clearBtn.disabled = true;
+      const originalText = clearBtn.textContent;
+      clearBtn.textContent = 'Clearing...';
+      try{
+        await deleteRunIds(ids);
+      }catch(err){
+        alert('Failed to clear: ' + (err?.message || err));
+      }finally{
+        clearBtn.textContent = originalText;
+        clearBtn.disabled = false;
+      }
+    });
+  }
 
   async function handleFiles(files){
     for(const file of files){

@@ -7,3 +7,6 @@ __pycache__
 *.pyw
 *.pyz
 *.pywz
+db/chroma/*
+.pytest_cache/*
+rag.drawio
