@@ -22,7 +22,7 @@ class QueryService:
                     for token in llm.query_stream(query):
                         yield token
                 self.log_data.add_log(
-                    f"Query streaming started successfully for query: {query}")
+                    f"Query streaming started successfully for query: {query}", "info")
 
                 return StreamingResponse(
                     token_gen(),
@@ -34,14 +34,12 @@ class QueryService:
                 )
             else:
                 answer = llm.query(query)
-                self.log_data.add_log(f"Query successful for query: {query}")
+                self.log_data.add_log(f"Query successful for query: {query}", "info")
                 return QueryResponse(answer=answer)
-        except HTTPException:
-            raise
         except RuntimeError as e:
-            self.log_data.add_log(f"Upstream LLM error in query_svc: {e}")
+            self.log_data.add_log(f"Upstream LLM error in query_svc: {e}", "error")
             raise HTTPException(status_code=502, detail=str(e))
         except Exception as e:
-            self.log_data.add_log(f"Unexpected error in query_svc: {e}")
+            self.log_data.add_log(f"Unexpected error in query_svc: {e}", "error")
             raise HTTPException(
-                status_code=500, detail="Internal server error")
+                status_code=500, detail=f"Internal server error : {e}")

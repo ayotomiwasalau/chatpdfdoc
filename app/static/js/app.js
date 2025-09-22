@@ -150,8 +150,8 @@ async function sendQuery(text,onChunk){
 function initChat(windowEl, formEl, inputEl){
   if(!windowEl || !formEl || !inputEl) return;
   // Clear chat history on page reload to start fresh
-  try { localStorage.removeItem(CHAT_HISTORY_KEY); } catch {}
-  windowEl.innerHTML = '';
+  // try { localStorage.removeItem(CHAT_HISTORY_KEY); } catch {}
+  // windowEl.innerHTML = '';
   // Restore history
   const history = loadChatHistory();
   if(Array.isArray(history)){
@@ -266,7 +266,7 @@ function initUploader({dropZone, input, browseBtn, list}){
       list.prepend(card);
       try{
         const resp = await uploadFile(file);
-        const runId = resp.run_id || resp?.data || 'n/a';
+        const runId = resp.run_id || 'Error: ' + resp?.detail || 'n/a';
         status.textContent = `Uploaded (run_id: ${runId})`;
         // persist
         const items = loadUploads();

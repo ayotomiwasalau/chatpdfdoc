@@ -13,13 +13,13 @@ class UploadService:
     async def upload_svc(self, file: UploadFile):
         if not file or not file.filename or not file.filename.strip():
             self.log_data.add_log(
-                f"Upload failed - file name must not be empty")
+                f"Upload failed - file name must not be empty", "error")
             raise HTTPException(
                 status_code=422, detail="File name must not be empty")
 
         if not file.content_type.startswith('application/pdf'):
             self.log_data.add_log(
-                f"Upload failed - only PDF files are supported")
+                f"Upload failed - only PDF files are supported", "error")
             raise HTTPException(
                 status_code=422, detail="Only PDF files are supported")
 
@@ -34,19 +34,19 @@ class UploadService:
 
             run_id = self.pipeline.run(filepath=path)
             self.log_data.add_log(
-                f"File uploaded to vector database: {run_id}")
+                f"File uploaded to vector database: {run_id}", "info")
             return run_id
         except FileNotFoundError as e:
-            self.log_data.add_log(f"Upload failed - file not found: {e}")
+            self.log_data.add_log(f"Upload failed - file not found: {e}", "error")
             raise HTTPException(status_code=422, detail=str(e))
         except ValueError as e:
-            self.log_data.add_log(f"Upload failed - invalid input: {e}")
+            self.log_data.add_log(f"Upload failed - invalid input: {e}", "error")
             raise HTTPException(status_code=422, detail=str(e))
         except RuntimeError as e:
-            self.log_data.add_log(f"Upload failed - processing error: {e}")
+            self.log_data.add_log(f"Upload failed - processing error: {e}", "error")
             raise HTTPException(status_code=500, detail="Processing failed")
         except Exception as e:
-            self.log_data.add_log(f"Unexpected error in upload_svc: {e}")
+            self.log_data.add_log(f"Unexpected error in upload_svc: {e}", "error")
             raise HTTPException(
                 status_code=500, detail="Internal server error")
         finally:
