@@ -78,7 +78,7 @@ To build a production grade RAG system that would be scalable and resilient, we 
 
 ### Code architecture
 
-[](./images/code-arch.jpg)
+![](./images/code-arch.jpg)
 
 The code was designed with extensibility in mind. Each modules handles a single reponsibility, this avoids overlapping or duplicate functions and overcomplicating the code base and its functionality. Furthermore, dependency inversion approach was applied, such that the lower level modules can easily be swapped or update with another without changing alot of files or disrupting the operations of higher level modules. This will make the code maintainable over a long period of time.
 
