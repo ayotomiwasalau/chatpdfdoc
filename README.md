@@ -51,18 +51,18 @@ For design consideration, on a high level we have 3 core services
 - The pipeline service for handling ingesting, processing and storing chunked data
 - The LLM Query service for calling 3rd party LLM APIs with retrieved data chunks to augment requests
 
-### Current MVP implementation
+### Current MVP design implementation
 
 ![](./images/currimpl.jpg)
 
 In this repo, we have a single server instance running all the core service. 
 - `FastAPI` was used for the API service, it receives the file and passes it to the `Pipeline` module which store the output in the vector DB after processing.
-- The vector store used is `Chroma DB`, and `OpenAI embeddings` was used to convert the documents to vector representations, so that similarity match can be executed
-- Once the client sends a query, the API receives it and passes to the `Query` module. This module handles runs a similarity match against the vector store to get chunks of data relevant to the query.
+- The vector store used is `Chroma DB`, and `OpenAI embeddings` was used to convert the documents to vector representations, so that similarity match can be executed. Chroma DB is a good choice because it is tested and trusted, it also integrates into a large number of ML tooling and has a sizable ecosystem.
+- Once the client sends a query, the API receives it and passes to the `Query` module. This module runs a similarity match against the vector store to get chunks of data relevant to the query.
 - The query is augmented and passed to the foundation LLM (OpenAI) so that the response is gotten and passed along to the client. An actual API call was made to the LLM not mocked.
 - The system also integrated unit tests and continous integration and deployment for smoother updates and changes.
 
-### Production level implementation 
+### Production level design implementation 
 
 ![](./images/prodimpl.jpg)
 
@@ -74,30 +74,13 @@ To build a production grade RAG system that would be scalable and resilient, we 
 - For faster retrival, we can batch query together, create indexes, partition data by tenants, use knowledge graph to organize information and also we can cache the hottest queries so there wont be need to frequently query the DB. Alot of DB providers offer these solutions out of the box for the users.
 - We can further have an SQL or NoSQL DB for metadata, so we can scale the vector data and the metadata separately and possibly cheaply. We can also run analytics conveniently on the metadata store
 - There is also need for logging and monitoring. The modules will be set up in a way to send logs and metrics data to the available loggin system. Notable open source logging/monitoring system include Loki, Prometheus and Grafana or ELK stack, alternative depending on cloud provider, for example AWS provides Cloud watch for logging, monitoring and alerting.
-- Then for the language model, there are many 3rd party LLM services that can be used, OpenAi or Anthropic are two I recommend. However Gemini is alot cheaper but less consistent.
+- Then for the language model, there are many 3rd party LLM services that can be used, OpenAi or Anthropic are two I recommend. However Gemini is alot cheaper but less consistent. Overall there MCP tools that make connecting to LLMs easy and straight forward
 
 ### Code architecture
 
 [](./images/code-arch.jpg)
 
-The code was designed with extensibility in mind. Each modules handles a single reponsibility, this avoids overlapping repsinsibilities and overcomplicating the code base and its functionality. Furthermore, dependency inversion approach was applied, such that the lower level modules can easily be swapped or update with another without changing alot of files or disrupting the operations of higher level modules.
+The code was designed with extensibility in mind. Each modules handles a single reponsibility, this avoids overlapping or duplicate functions and overcomplicating the code base and its functionality. Furthermore, dependency inversion approach was applied, such that the lower level modules can easily be swapped or update with another without changing alot of files or disrupting the operations of higher level modules. This will make the code maintainable over a long period of time.
 
-
-
-
-
-
-Handling thousands of documents in parallel.
-Using orchestration tools (e.g., Airflow) for scheduling/monitoring.
-Integrating with cloud storage & warehouses (AWS S3, Redshift, BigQuery, etc.).
-Exposing the query system via an API (e.g., FastAPI).
-
-What you actually implemented vs. what you mocked.
-Setup instructions so we can run your solution locally.
-Improvements you’d make with more time (e.g., embeddings, knowledge graph, caching).
-The reasoning behind your technical decisions.
-
-Data engineering best practices → Thoughtful ETL/pipeline design, scalability, reproducibility.
-Architecture thinking → Ability to explain design choices and extensions.
 
 
