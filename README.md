@@ -2,9 +2,9 @@
 ## Goal
 The goal is to build a Retrieval-Augmented Generation (RAG) system to handle document ingestion, extract meaningful content, store it in structured formats, and make it queryable using LLMs.
 
-live url: [https://rag-system-ufgd.onrender.com](https://rag-system-ufgd.onrender.com)
+live url: [https://chatpdfdoc-46sy.onrender.com](https://chatpdfdoc-46sy.onrender.com)
 
-API docs: [https://rag-system-ufgd.onrender.com/docs](https://rag-system-ufgd.onrender.com/docs)
+API docs: [https://chatpdfdoc-46sy.onrender.com/docs](https://chatpdfdoc-46sy.onrender.com/docs)
 
 ![](./images/interface.png)
 
