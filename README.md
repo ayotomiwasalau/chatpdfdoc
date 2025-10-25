@@ -6,7 +6,7 @@ live url: [https://chatpdfdoc-46sy.onrender.com](https://chatpdfdoc-46sy.onrende
 
 API docs: [https://chatpdfdoc-46sy.onrender.com/docs](https://chatpdfdoc-46sy.onrender.com/docs)
 
-![](./images/interface.png)
+![](./images/interface0.png)
 
 ## How to setup the RAG system locally
 - Create a virtual environment
