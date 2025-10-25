@@ -27,6 +27,10 @@ body {
 .brand { display: inline-flex; gap: 10px; align-items: center; color: var(--text); text-decoration: none; }
 .logo { width: 28px; height: 28px; }
 .brand-text { font-weight: 600; letter-spacing: 0.3px; }
+.brand-group { display: flex; flex-direction: column; gap: 2px; }
+.brand-subtext { color: var(--muted); font-size: 11px; line-height: 1; margin-left: 38px; font-style: italic; }
+.brand-subtext a { color: var(--muted); text-decoration: none; }
+.brand-subtext a:hover { color: var(--text); text-decoration: underline; }
 .nav { display: flex; gap: 16px; align-items: center; }
 .nav-link { color: var(--muted); text-decoration: none; }
 .nav-link:hover { color: var(--text); }
@@ -48,8 +52,8 @@ body {
 
 .btn:hover { filter: brightness(0.98); }
 
-.chat-input { display: flex; gap: 8px; padding: 6px 8px; border: 1px solid var(--panel-border); background: var(--panel); border-radius: 10px; height: 90px; align-items: center; }
-.chat-input input { flex: 1; height: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--panel-border); background: #0f0f0f; color: var(--text); font-size: 14px; }
+.chat-input { display: flex; gap: 8px; padding: 6px 8px; border: 1px solid var(--panel-border); background: var(--panel); border-radius: 10px; height: 140px; align-items: center; }
+.chat-input input, .chat-input textarea { flex: 1; height: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--panel-border); background: #0f0f0f; color: var(--text); font-size: 14px; line-height: 1.35; white-space: pre-wrap; overflow-wrap: anywhere; }
 .chat-input .btn { width: 80px; height: 100%; padding: 0 10px; text-align: center; }
 .btn { border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px 14px; cursor: pointer; }
 .btn-primary { background: var(--accent); border-color: #e5b22f; color: #111; font-weight: 600; }
@@ -70,4 +74,7 @@ body {
 .uploads-empty { color: var(--muted); font-size: 14px; padding: 8px 2px; }
 
 .footer { text-align: center; color: var(--muted); padding: 16px; border-top: 1px solid var(--panel-border); }
+
+.github-link { color: var(--muted); text-decoration: none; font-size: 14px; }
+.github-link:hover { color: var(--text); text-decoration: underline; }
 

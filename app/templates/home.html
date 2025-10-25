@@ -1,10 +1,15 @@
 {% extends 'base.html' %}
-{% block title %}Home - RAG System{% endblock %}
+{% block title %}Home - ChatPDFDoc{% endblock %}
 {% block content %}
+<div class="page-header">
+    <h2>Chat with your PDF documents</h2>
+</div>
 <section class="chat">
-    <div id="chat-window" class="chat-window"></div>
+    <div id="chat-window" class="chat-window">
+    </div>
     <form id="chat-form" class="chat-input">
-        <input type="text" id="chat-text" placeholder="Ask a question..." autocomplete="off" />
+        <!-- <input type="text" id="chat-text" placeholder="Ask a question..." autocomplete="off" /> -->
+        <textarea id="chat-text" placeholder="Ask a question..." autocomplete="off" wrap="soft"></textarea>
         <button type="submit" class="btn btn-primary">Send</button>
         <button id="new-chat-btn" class="btn btn-primary" type="button">New Chat</button>
     </form>

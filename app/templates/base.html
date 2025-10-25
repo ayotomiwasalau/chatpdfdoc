@@ -3,28 +3,32 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}RAG System{% endblock %}</title>
+    <title>{% block title %}ChatPDFDoc{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/styles.css?v=1" />
-    <link rel="icon" href="/static/img/logo.svg" />
+    <link rel="icon" href="/static/img/logomain.png" />
     {% block head_extra %}{% endblock %}
 </head>
 <body>
     <header class="app-header">
-        <a href="/" class="brand">
-            <svg xmlns="http://www.w3.org/2000/svg" width="25%" viewBox="0 0 302 64" fill="none"><path d="M301.348 63.347H285.696V0.738281H301.348V63.347Z" fill="currentColor"></path><path d="M219.174 63.347H205.479V0.738281H214.16L256.657 39.0548H258.305V0.738281H272V63.347H263.319L220.822 25.0305H219.174V63.347Z" fill="currentColor"></path><path d="M191.783 63.347H176.131V0.738281H191.783V63.347Z" fill="currentColor"></path><path d="M97.87 63.347H84.1744V0.738281H105.608L123.305 39.0548H123.698L141.395 0.738281H162.435V63.347H148.74V28.1296L149.624 17.0165H148.278L125.861 63.347H121.044L98.6271 17.1835H97.3784L97.87 28.1296V63.347Z" fill="currentColor"></path><path d="M70.4787 0.738281V63.347H54.894V18.0183H54.6916L17.7538 63.347H0.0439453V61.8444L51.5544 0.738281H70.4787Z" fill="currentColor"></path></svg>
-            <!-- <img src="/static/img/logo.svg" alt="Logo" class="logo" /> -->
-            <span class="brand-text">RAG System</span>
-            
-        </a>
+        <div class="brand-group">
+            <a href="/" class="brand">
+                <img src="/static/img/logomain.png" alt="Logo" class="logo" />
+                <span class="brand-text">ChatPDFDoc</span>
+            </a>
+            <small class="brand-subtext">by <a href="https://tiptier.co" target="_blank" rel="noopener noreferrer">Tiptier</a></small>
+        </div>
         <nav class="nav">
             <a href="/" class="nav-link">Home</a>
-            <a href="/add-document" class="nav-link">Add Document</a>
+            <a href="/add-document" class="nav-link">Upload Document</a>
         </nav>
     </header>
     <main class="container">
         {% block content %}{% endblock %}
     </main>
-    <footer class="footer">© <span id="year"></span> RAG System</footer>
+    <footer class="footer">© <span id="year"></span> ChatPDFDoc
+        <br/> 
+    <a href="https://github.com/ayotomiwasalau/chatpdfdoc" class="github-link">GitHub</a>
+    </footer>
     <script src="/static/js/app.js"></script>
     {% block body_extra %}{% endblock %}
 </body>

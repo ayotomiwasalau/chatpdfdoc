@@ -1,10 +1,16 @@
+// Auto-delete after being away this long (e.g., 30 minutes)
+const AWAY_DELETE_AFTER_MS = 45 * 60 * 1000;
+const AWAY_SINCE_KEY = 'rag_away_since_v1';
+
+
 function byId(id){return document.getElementById(id);} 
 function el(tag, cls){ const e=document.createElement(tag); if(cls) e.className=cls; return e; }
 
 // App config (endpoints)
 if(!window.APP_CONFIG){
   window.APP_CONFIG = {
-    endpoints: { query: "/api/v1/query", upload: "/api/v1/upload", del: "/api/v1/delete" }
+    endpoints: { query: "/api/v1/query", upload: "/api/v1/upload", del: "/api/v1/delete" },
+    maxUploadMB: 25
   };
 }
 
@@ -108,12 +114,13 @@ function saveChatHistory(history){
 }
 
 async function sendQuery(text,onChunk){
+  const run_ids = getRunIds();
   const res = await fetch(window.APP_CONFIG.endpoints.query + '?' + new URLSearchParams({
     stream_mode: true
   }).toString(), {
     method: 'POST', 
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query: text })
+    body: JSON.stringify({ query: text, run_ids: run_ids })
   });
   // const data = await res.json();
   // // Flexible: handle either {answer} or {response}
@@ -146,6 +153,50 @@ async function sendQuery(text,onChunk){
   }
 }
 
+function startAssistantIntro(windowEl){
+  const historyNow = loadChatHistory();
+  if(Array.isArray(historyNow) && historyNow.length) return;
+
+  const uploads = loadUploads();
+  let intro;
+  if(Array.isArray(uploads) && uploads.length){
+    const names = uploads.map((x,i)=> `${i+1}. ${x.name}`).join('\n');
+    intro = `Greet the user briefly. Then list the available documents and ask which one they want to chat with:\n${names}\nFinish with a single, clear question asking them to pick a document.`;
+  } else {
+    intro = `Greet the user briefly. Explain there are no uploaded documents yet. Ask them to upload a document to chat with from the Upload Document page, then suggest kinds of documents (reports, papers, contracts, etc ) they can upload`;
+  }
+
+  let typing;
+  (async ()=>{
+    try{
+      typing = showTyping(windowEl);
+      let buf = '';
+      let firstChunk = true;
+      await sendQuery(intro, (chunk)=>{
+        if(firstChunk){ typing.stop(); firstChunk=false; typing.el.innerHTML=''; }
+        buf += chunk;
+        typing.el.innerHTML = renderMarkdown(buf);
+      });
+      const cur2 = loadChatHistory();
+      cur2.push({ role: 'assistant', text: buf });
+      saveChatHistory(cur2);
+    }catch(err){
+      const errMsg = 'Error: ' + (err?.message || err);
+      try { if(typing && typeof typing.stop === 'function') typing.stop(); } catch {}
+      const tEl = typing && typing.el ? typing.el : appendMessage(windowEl, 'assistant', '');
+      tEl.textContent = errMsg;
+      const cur3 = loadChatHistory();
+      cur3.push({ role: 'assistant', text: errMsg });
+      saveChatHistory(cur3);
+    }
+  })();
+}
+
+function convertHistoryToString(history){
+  let historyString = history.map(x=> `${x.role}: ${x.text}`).join('\n');
+  return "\nChatHistory:\n" + historyString;
+}
+
 
 function initChat(windowEl, formEl, inputEl){
   if(!windowEl || !formEl || !inputEl) return;
@@ -161,6 +212,7 @@ function initChat(windowEl, formEl, inputEl){
       }
     });
   }
+  startAssistantIntro(windowEl);
   // New chat handling
   const newBtn = byId('new-chat-btn');
   if(newBtn){
@@ -168,23 +220,37 @@ function initChat(windowEl, formEl, inputEl){
       localStorage.removeItem(CHAT_HISTORY_KEY);
       windowEl.innerHTML = '';
       inputEl.focus();
+      startAssistantIntro(windowEl);
     });
   }
+
+  inputEl.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      if (typeof formEl.requestSubmit === 'function') {
+        formEl.requestSubmit();
+      } else {
+        formEl.submit();
+      }
+    }
+  });
   formEl.addEventListener('submit', async (e)=>{
     e.preventDefault();
     const text = inputEl.value.trim();
     if(!text) return;
     appendMessage(windowEl, 'user', text);
     const cur = loadChatHistory();
-    cur.push({ role: 'user', text });
+    let history = convertHistoryToString(cur)
+    cur.push({ role: 'user', text })
     saveChatHistory(cur);
     inputEl.value = '';
     let typing;
+    let fullquery = history + "\n User question: " + text;
     try {
       typing = showTyping(windowEl);
       let buf = '';
       let firstChunk = true;
-      await sendQuery(text, (chunk) => {
+      await sendQuery(fullquery, (chunk) => {
         if(firstChunk){ typing.stop(); firstChunk = false; typing.el.innerHTML = ''; }
         buf += chunk;
         typing.el.innerHTML = renderMarkdown(buf);
@@ -234,12 +300,66 @@ async function deleteRunIds(runIds){
   return res.json().catch(()=> ({}));
 }
 
+
+async function maybeDeleteAfterAway(){
+  const since = Number(localStorage.getItem(AWAY_SINCE_KEY) || 0);
+  if(!since) return;
+
+  // one-shot per away session
+  localStorage.removeItem(AWAY_SINCE_KEY);
+
+  if(Date.now() - since < AWAY_DELETE_AFTER_MS) return;
+
+  const ids = getRunIds();
+
+  // Clear local storage and, if present, the uploader UI
+  try { localStorage.removeItem(UPLOADS_KEY); } catch {}
+  const list = byId('uploads-row');
+  if(list){ list.innerHTML = ''; }
+  const empty = byId('uploads-empty');
+  if(empty){ empty.style.display = 'block'; }
+
+  if(!ids.length) return;
+
+  try{
+    await deleteRunIds(ids);
+  }catch(err){
+    console.warn('Auto-delete failed:', err?.message || err);
+  }
+}
+
+// Attach per-item delete button to an upload card
+function attachDeleteButton(card, listEl, name, runId){
+  if(!runId) return;
+  const delBtn = el('button', 'btn btn-danger');
+  delBtn.textContent = 'Delete';
+  delBtn.addEventListener('click', async ()=>{
+    const original = delBtn.textContent;
+    delBtn.disabled = true;
+    delBtn.textContent = 'Deleting...';
+    try{
+      await deleteRunIds([runId]);
+      const remaining = (loadUploads() || []).filter(x => x && x.run_id !== runId);
+      saveUploads(remaining);
+      if(card && card.parentNode === listEl){ listEl.removeChild(card); }
+      const empty = byId('uploads-empty');
+      if(empty){ empty.style.display = remaining && remaining.length ? 'none' : 'block'; }
+    } catch (err){
+      alert('Failed to delete: ' + (err?.message || err));
+      delBtn.disabled = false;
+      delBtn.textContent = original;
+    }
+  });
+  card.appendChild(delBtn);
+}
+
 function renderUploadItem(listEl, item){
   const card = el('div', 'upload-card');
   const name = el('div', 'upload-name'); name.textContent = item.name;
   const status = el('div', 'upload-status');
-  status.textContent = item.run_id ? `Uploaded (run_id: ${item.run_id})` : 'Uploaded';
+  status.textContent = item.run_id ? `Uploaded successfully (run_id: ${item.run_id})` : 'Uploaded';
   card.appendChild(name); card.appendChild(status);
+  if(item.run_id){ attachDeleteButton(card, listEl, item.name, item.run_id); }
   listEl.prepend(card);
 }
 
@@ -302,22 +422,38 @@ function initUploader({dropZone, input, browseBtn, list}){
   }
 
   async function handleFiles(files){
+    const maxMB = window.APP_CONFIG.maxUploadMB;
+    const existingNames = new Set(((loadUploads() || [])).map(x => x && x.name).filter(Boolean));
+  
     for(const file of files){
       const card = el('div', 'upload-card');
       const name = el('div', 'upload-name'); name.textContent = file.name;
       const status = el('div', 'upload-status'); status.textContent = 'Uploading...';
       card.appendChild(name); card.appendChild(status);
       list.prepend(card);
+  
+      if (existingNames.has(file.name)) {
+        status.textContent = 'Skipped: Already uploaded';
+        continue;
+      }
+  
+      if (file.size > maxMB * 1024 * 1024) {
+        status.textContent = `Failed: File too large. Max ${maxMB} MB`;
+        continue;
+      }
+  
       try{
         const resp = await uploadFile(file);
-        const runId = resp.run_id || 'Error: ' + resp?.detail || 'n/a';
-        status.textContent = `Uploaded (run_id: ${runId})`;
+        const runId = resp.run_id || 'n/a';
+        status.textContent = `Upload successful: (run_id: ${runId})`;
         // persist
         const items = loadUploads();
         items.push({ name: file.name, run_id: runId, ts: Date.now() });
         saveUploads(items);
+        existingNames.add(file.name);
         const empty = byId('uploads-empty');
         if(empty){ empty.style.display = 'none'; }
+        attachDeleteButton(card, list, file.name, runId);
       }catch(err){
         status.textContent = 'Failed: ' + (err?.message || err);
       }
@@ -346,5 +482,25 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const items = loadUploads();
     if(empty){ empty.style.display = items && items.length ? 'none' : 'block'; }
   }
+});
+
+
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden){
+    try { localStorage.setItem(AWAY_SINCE_KEY, String(Date.now())); } catch {}
+  } else {
+    // user came back
+    maybeDeleteAfterAway();
+  }
+});
+
+// On BFCache restore or regular navigation back to the site
+window.addEventListener('pageshow', ()=> {
+  maybeDeleteAfterAway();
+});
+
+// Also run once on initial load
+document.addEventListener('DOMContentLoaded', ()=>{
+  maybeDeleteAfterAway();
 });
 

@@ -3,7 +3,7 @@ from app.controllers import app
 import os
 
 print("*************************************************************")
-print("Check db/rag.log for logs")
+print("Check db/rag.txt for logs")
 print("*************************************************************")
 
 if __name__ == "__main__":

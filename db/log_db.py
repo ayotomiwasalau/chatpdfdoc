@@ -5,29 +5,30 @@ import logging
 class LogData:
     def __init__(self, log_conf: LogConf):
         self.log_file = log_conf.log_file
-        self.logging = logging
-        self.logging.basicConfig(
+        logging.basicConfig(
             filename=self.log_file,
             encoding="utf-8",
             filemode="w",
-            format="{asctime} - {levelname} - {message}",
-            style="{",
+            format="%(asctime)s - %(levelname)s - %(message)s",
             datefmt="%Y-%m-%d %H:%M",
             level=logging.INFO
         )
+        self.logger = logging.getLogger(__name__)
+
     def add_log(self, log: str, level: str = "info"):
+        level = level.lower()
         if level == "info":
-            self.logging.info(log)
+            self.logger.info(log)
         elif level == "debug":
-            self.logging.debug(log)
+            self.logger.debug(log)
         elif level == "warning":
-            self.logging.warning(log)
+            self.logger.warning(log)
         elif level == "error":
-            self.logging.error(log)
+            self.logger.error(log)
         elif level == "critical":
-            self.logging.critical(log)
+            self.logger.critical(log)
         else:
-            pass
+            self.logger.info(log)
 
     def get_log(self):
         try:

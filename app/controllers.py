@@ -20,6 +20,9 @@ from typing import List
 from fastapi import Body
 from app.services.delete_service import DeleteService
 from app.models.schemas import DeleteResponse, DeleteRequest
+from dotenv import load_dotenv
+
+load_dotenv()
 
 API_VERSION = "v1"
 
@@ -64,7 +67,7 @@ async def add_document(request: Request):
 async def query_llm(request: QueryRequest, stream_mode: bool = False):
     query = Query(chat_openai_agent, chroma_db, config)
     query_service = QueryService(query, log_data)
-    return query_service.query_svc(request.query, stream_mode)
+    return query_service.query_svc(request.query, stream_mode, request.run_ids)
 
 
 @app.post(f"/api/{API_VERSION}/upload")

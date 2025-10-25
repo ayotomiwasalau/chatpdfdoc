@@ -11,3 +11,4 @@ db/chroma/*
 .pytest_cache/*
 rag.drawio
 .DS_Store
+todolist.md

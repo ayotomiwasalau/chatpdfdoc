@@ -6,6 +6,7 @@ from typing import List
 
 class QueryRequest(BaseModel):
     query: str
+    run_ids: List[str] = []
 
 class QueryResponse(BaseModel):
     answer: str

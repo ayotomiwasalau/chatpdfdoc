@@ -1,4 +1,4 @@
-# Amini Retrieval-Augmented Generation (RAG) assistant
+# ChatPDFDoc Retrieval-Augmented Generation (RAG) assistant
 ## Goal
 The goal is to build a Retrieval-Augmented Generation (RAG) system to handle document ingestion, extract meaningful content, store it in structured formats, and make it queryable using LLMs.
 

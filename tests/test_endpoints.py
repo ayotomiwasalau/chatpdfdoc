@@ -38,7 +38,7 @@ def test_query_endpoint_validation_error(client):
 def test_query_endpoint_streaming(monkeypatch, client):
     from llm_service import query as query_module
 
-    def fake_query_stream(self, user_prompt: str):
+    def fake_query_stream(self, user_prompt: str, run_ids=[]):
         tokens = ["tok1 ", "tok2 ", "tok3"]
         for t in tokens:
             yield t

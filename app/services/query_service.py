@@ -3,6 +3,7 @@ from fastapi.responses import StreamingResponse
 from app.models.schemas import QueryResponse
 from db.log_db import LogData
 from llm_service.query import Query
+from typing import List
 
 
 class QueryService:
@@ -10,7 +11,7 @@ class QueryService:
         self.query = query
         self.log_data = log_data
 
-    def query_svc(self, query: str, stream_mode: bool):
+    def query_svc(self, query: str, stream_mode: bool, run_ids: List[str] = []):
         if not query or not query.strip():
             raise HTTPException(
                 status_code=422, detail="Query must not be empty")
@@ -19,10 +20,10 @@ class QueryService:
             llm = self.query
             if stream_mode:
                 def token_gen():
-                    for token in llm.query_stream(query):
+                    for token in llm.query_stream(query, run_ids):
                         yield token
                 self.log_data.add_log(
-                    f"Query streaming started successfully for query: {query}", "info")
+                    f"Query streaming started successfully for query", "info")
 
                 return StreamingResponse(
                     token_gen(),
@@ -34,7 +35,7 @@ class QueryService:
                 )
             else:
                 answer = llm.query(query)
-                self.log_data.add_log(f"Query successful for query: {query}", "info")
+                self.log_data.add_log(f"Query successful for query", "info")
                 return QueryResponse(answer=answer)
         except RuntimeError as e:
             self.log_data.add_log(f"Upstream LLM error in query_svc: {e}", "error")
