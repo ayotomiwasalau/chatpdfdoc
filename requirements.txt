@@ -18,3 +18,4 @@ pytest-asyncio
 httpx
 flake8
 autopep8
+langchain-text-splitters

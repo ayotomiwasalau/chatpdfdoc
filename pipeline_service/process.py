@@ -1,4 +1,7 @@
-from langchain.text_splitter import CharacterTextSplitter
+try:
+    from langchain_text_splitters import CharacterTextSplitter
+except ImportError:
+    from langchain.text_splitter import CharacterTextSplitter
 from typing import List
 from langchain_core.documents import Document
 from app.conf.config import Config
