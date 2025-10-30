@@ -9,6 +9,12 @@ API docs: [https://chatpdfdoc-46sy.onrender.com/docs](https://chatpdfdoc-46sy.on
 ![](./images/interface0.png)
 
 ## How to setup the RAG system locally
+- Clone the repository
+```
+git clone https://github.com/ayotomiwasalau/chatpdfdoc.git
+cd chatpdfdoc
+```
+
 - Create a virtual environment
 ``` 
 python3 -m venv .ragenv

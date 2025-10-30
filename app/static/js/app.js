@@ -444,7 +444,11 @@ function initUploader({dropZone, input, browseBtn, list}){
   
       try{
         const resp = await uploadFile(file);
-        const runId = resp.run_id || 'n/a';
+        const runId = resp.run_id || null;
+        if (!runId) {
+          status.textContent = `Failed: ${resp.detail}`;
+          continue;
+        }
         status.textContent = `Upload successful: (run_id: ${runId})`;
         // persist
         const items = loadUploads();
