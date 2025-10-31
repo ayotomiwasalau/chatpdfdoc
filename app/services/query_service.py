@@ -23,7 +23,7 @@ class QueryService:
                     for token in llm.query_stream(query, run_ids):
                         yield token
                 self.log_data.add_log(
-                    f"Query streaming started successfully for query", "info")
+                    f"Query streaming started successfully for query {query}", "info")
 
                 return StreamingResponse(
                     token_gen(),

@@ -6,16 +6,19 @@ class LogData:
     def __init__(self, log_conf: LogConf):
         self.log_file = log_conf.log_file
         logging.basicConfig(
-            filename=self.log_file,
-            encoding="utf-8",
-            filemode="w",
             format="%(asctime)s - %(levelname)s - %(message)s",
             datefmt="%Y-%m-%d %H:%M",
-            level=logging.INFO
+            level=logging.INFO,
+            handlers=[
+                # logging.FileHandler(self.log_file, mode="w", encoding="utf-8"),
+                logging.StreamHandler() 
+            ],
+            force=True
         )
         self.logger = logging.getLogger(__name__)
 
     def add_log(self, log: str, level: str = "info"):
+        log = log.split("\n")[-1]
         level = level.lower()
         if level == "info":
             self.logger.info(log)

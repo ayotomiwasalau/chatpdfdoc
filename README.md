@@ -34,7 +34,7 @@ export OPENAI_API_KEY="api_key"
 - Install dependencies
 ```
 python -m pip install --upgrade pip setuptools wheel
-python -m pip install -r requirement.txt
+python -m pip install -r requirements.txt
 ```
 
 - Start the app
